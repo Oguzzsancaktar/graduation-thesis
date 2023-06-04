@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node app.js",
     "start:all": "concurrently --kill-others \"npm run start:backend:dev\" \"npm run start:frotend:dev\"",
-    "start:backend:dev": "NODE_ENV=development env-cmd -f .env.development nodemon app.js",
-    "start:frotend:dev": "cd client && npm run start"
+    "start:backend:dev": "NODE_ENV=development env-cmd -f .env nodemon app.js",
+    "start:frotend:dev": "cd client && npm run dev"
   },
   "dependencies": {
     "body-parser": "^1.20.2",
