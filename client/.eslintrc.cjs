@@ -4,6 +4,7 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
   plugins: ['react-refresh'],
+  "react/react-in-jsx-scope": "off",
   rules: {
     'react-refresh/only-export-components': 'warn',
   },

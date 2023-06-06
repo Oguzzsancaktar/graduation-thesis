@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {
@@ -76,8 +77,10 @@ export default {
             'on': '#74000d',    //800  
           }
         },
-       
-      }
+      },
+      backgroundImage: {
+        dashboard: "url('./src/assets/images/background/app-background.png')",
+      },
     },
 
   },

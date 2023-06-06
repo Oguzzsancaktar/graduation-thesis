@@ -1,148 +1,71 @@
-'use client'
-
 import { createContext, useContext, useMemo, useReducer } from 'react'
+import { IUser } from '@/models'
 
 enum EReducerActionKind {
-  SET_MODAL_SHOW = 'SET_MODAL_SHOW',
-  SET_SERVICE_TYPE = 'SET_SERVICE_TYPE',
-  SET_BUILDING_TYPE = 'SET_BUILDING_TYPE',
-  SET_FEATURES = 'SET_FEATURES',
-  SET_ADMINISTRATION_TIME = 'SET_ADMINISTRATION_TIME',
-  SET_POST_CODE = 'SET_POST_CODE',
-  SET_PERSONAL_DATA = 'SET_PERSONAL_DATA',
-  RESET = 'RESET',
+  SET_USER = 'SET_USER',
+  LOGOUT = 'LOGOUT',
 }
 
 interface IReducerAction {
   type: EReducerActionKind
-  payload?: number | boolean | string | IRentalFeatures | IPersonalData
+  payload?: IUser
 }
 
-export interface ISubmitRentalState {
-  isModalOpen: boolean
-  serviceType: number | null
-  buildingType: number | null
-  features: IRentalFeatures
-  administrationTime: number | null
-  postCode: string | null
-  personalData: IPersonalData
+export interface IAuthenticationState {
+  loggedUser: IUser | null
 }
 
-export interface IPersonalData {
-  firstName: string
-  lastName: string
-  email: string
-  phone: string
-}
-interface IRentalFeatures {
-  roomCount: number
-  minArea: number
+
+interface IAuthenticationApi {
+  setUser: (user: IUser) => void
+  logout: () => void
 }
 
-interface ISubmitRentalApi {
-  setShowModal: (isModalOpen: boolean) => void
-  setServiceType: (serviceType: number) => void
-  setBuildingType: (buildingType: number) => void
-  setFeatures: (features: IRentalFeatures) => void
-  setAdministrationTime: (administrationTime: number) => void
-  setPostCode: (postCode: string) => void
-  setPersonalData: (personalData: IPersonalData) => void
-  reset: () => void
+const initialState: IAuthenticationState = {
+  loggedUser: null,
 }
 
-const initialState: ISubmitRentalState = {
-  isModalOpen: false,
-  serviceType: null,
-  buildingType: null,
-  features: {
-    roomCount: 0,
-    minArea: 0,
-  },
-  administrationTime: null,
-  postCode: null,
-  personalData: {
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-  },
+const initialApi: IAuthenticationApi = {
+  setUser: () => {},
+  logout: () => {},
 }
 
-const initialApi: ISubmitRentalApi = {
-  setShowModal: () => {},
-  setServiceType: () => {},
-  setBuildingType: () => {},
-  setFeatures: () => {},
-  setAdministrationTime: () => {},
-  setPostCode: () => {},
-  setPersonalData: () => {},
-  reset: () => {},
-}
+const AuthenticationStateContext = createContext(initialState)
+const AuthenticationApiContext = createContext(initialApi)
 
-const SubmitRentalStateContext = createContext(initialState)
-const SubmitRentalApiContext = createContext(initialApi)
-
-const useSubmitRentalStateContext = () => {
-  const ctx = useContext(SubmitRentalStateContext)
+const useAuthenticationStateContext = () => {
+  const ctx = useContext(AuthenticationStateContext)
 
   if (!ctx) {
-    throw new Error('useSubmitRentalStateContext must be used within a SubmitRentalStateContextProvider')
+    throw new Error('useAuthenticationStateContext must be used within a AuthenticationStateContextProvider')
   }
 
   return ctx
 }
 
-const useSubmitRentalApiContext = () => {
-  const ctx = useContext(SubmitRentalApiContext)
+const useAuthenticationApiContext = () => {
+  const ctx = useContext(AuthenticationApiContext)
 
   if (!ctx) {
-    throw new Error('useSubmitRentalApiContext must be used within a SubmitRentalApiContextProvider')
+    throw new Error('useAuthenticationApiContext must be used within a AuthenticationApiContextProvider')
   }
 
   return ctx
 }
 
-const reducer = (state: ISubmitRentalState, action: IReducerAction): ISubmitRentalState => {
+const reducer = (state: IAuthenticationState, action: IReducerAction): IAuthenticationState => {
   const { type, payload } = action
   switch (type) {
-    case EReducerActionKind.SET_MODAL_SHOW:
+    case EReducerActionKind.SET_USER:
       return {
         ...state,
-        isModalOpen: payload as boolean,
+        loggedUser: payload as IUser,
       }
-    case EReducerActionKind.SET_SERVICE_TYPE:
+    case EReducerActionKind.LOGOUT:
       return {
         ...state,
-        serviceType: payload as number,
+        loggedUser: null,
       }
-    case EReducerActionKind.SET_BUILDING_TYPE:
-      return {
-        ...state,
-        buildingType: payload as number,
-      }
-    case EReducerActionKind.SET_FEATURES:
-      return {
-        ...state,
-        features: payload as IRentalFeatures,
-      }
-    case EReducerActionKind.SET_ADMINISTRATION_TIME:
-      return {
-        ...state,
-        administrationTime: payload as number,
-      }
-    case EReducerActionKind.SET_POST_CODE:
-      return {
-        ...state,
-        postCode: payload as string,
-      }
-    case EReducerActionKind.SET_PERSONAL_DATA:
-      return {
-        ...state,
-        personalData: payload as unknown as IPersonalData,
-      }
-
-    case EReducerActionKind.RESET:
-      return initialState
     default:
       throw new Error(`Unknown action type ${type}`)
   }
@@ -152,27 +75,30 @@ interface IProps {
   children: React.ReactNode
 }
 
-const SubmitRentalContextProvider: React.FC<IProps> = ({ children }) => {
+const AuthenticationContextProvider: React.FC<IProps> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState)
 
-  const submitRentalApi = useMemo<ISubmitRentalApi>(() => {
+  const submitRentalApi = useMemo<IAuthenticationApi>(() => {
     return {
-      setShowModal: (isModalOpen: boolean) => dispatch({ type: EReducerActionKind.SET_MODAL_SHOW, payload: isModalOpen }),
-      setServiceType: (serviceType: number) => dispatch({ type: EReducerActionKind.SET_SERVICE_TYPE, payload: serviceType }),
-      setBuildingType: (buildingType: number) => dispatch({ type: EReducerActionKind.SET_BUILDING_TYPE, payload: buildingType }),
-      setFeatures: (features: IRentalFeatures) => dispatch({ type: EReducerActionKind.SET_FEATURES, payload: features }),
-      setAdministrationTime: (administrationTime: number) => dispatch({ type: EReducerActionKind.SET_ADMINISTRATION_TIME, payload: administrationTime }),
-      setPostCode: (postCode: string) => dispatch({ type: EReducerActionKind.SET_POST_CODE, payload: postCode }),
-      setPersonalData: (personalData: IPersonalData) => dispatch({ type: EReducerActionKind.SET_PERSONAL_DATA, payload: personalData }),
-      reset: () => dispatch({ type: EReducerActionKind.RESET }),
+      setUser: (user: IUser) => {
+        dispatch({
+          type: EReducerActionKind.SET_USER,
+          payload: user,
+        })
+      },
+      logout: () => {
+        dispatch({
+          type: EReducerActionKind.LOGOUT,
+        })
+      }
     }
   }, [dispatch])
 
   return (
-    <SubmitRentalStateContext.Provider value={state}>
-      <SubmitRentalApiContext.Provider value={submitRentalApi}>{children}</SubmitRentalApiContext.Provider>
-    </SubmitRentalStateContext.Provider>
+    <AuthenticationStateContext.Provider value={state}>
+      <AuthenticationApiContext.Provider value={submitRentalApi}>{children}</AuthenticationApiContext.Provider>
+    </AuthenticationStateContext.Provider>
   )
 }
 
-export { useSubmitRentalStateContext, useSubmitRentalApiContext, SubmitRentalContextProvider }
+export { useAuthenticationStateContext, useAuthenticationApiContext, AuthenticationContextProvider }
