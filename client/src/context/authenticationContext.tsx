@@ -26,8 +26,8 @@ const initialState: IAuthenticationState = {
 }
 
 const initialApi: IAuthenticationApi = {
-  setUser: () => {},
-  logout: () => {},
+  setUser: () => { },
+  logout: () => { },
 }
 
 const AuthenticationStateContext = createContext(initialState)

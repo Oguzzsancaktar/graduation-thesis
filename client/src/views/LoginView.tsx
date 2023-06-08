@@ -1,10 +1,12 @@
-import { useAuthenticationApiContext } from '@/context/authenticationContext'
+import { appRoutes } from '@/constants'
+import { useAuthenticationApiContext, useAuthenticationStateContext } from '@/context/authenticationContext'
 import { IUser } from '@/models'
 import { signIn } from '@/services'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const LoginView = () => {
+    const { loggedUser } = useAuthenticationStateContext()
     const navigate = useNavigate()
 
     const { setUser } = useAuthenticationApiContext()
@@ -24,10 +26,18 @@ const LoginView = () => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         event.stopPropagation()
-        const loggedUser = await signIn(credentials)
-        setUser(loggedUser)
-        navigate('/dashboard')
+        const loginUser = await signIn(credentials)
+        setUser(loginUser)
     }
+
+    useEffect(() => {
+        console.log("loggedUserloggedUser", loggedUser);
+        if (loggedUser) {
+            localStorage.setItem('user', JSON.stringify(loggedUser))
+            navigate(appRoutes.dashboard)
+        }
+
+    }, [loggedUser])
 
     return (
         <section className="bg-gray-50 dark:bg-gray-900">
