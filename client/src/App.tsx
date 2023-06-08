@@ -1,14 +1,19 @@
 import React, { Suspense } from 'react'
-
-import { Layout } from './components'
-import { CalendarView, DashboardView, LoginView } from '@/views'
 import { Navigate, Route, Routes } from 'react-router-dom'
-import { PrivateRouter } from './router'
+// Components.
+import { GlobalModal } from '@/components'
+// Views.
+import { CalendarView, DashboardView, LoginView, SettingsView } from '@/views'
+// Routes.
+import { PrivateRouter } from '@/router'
+import { ToastContainer } from 'react-toastify'
 
 function App() {
   return (
     <>
       <Suspense fallback={<div>Loading...</div>}>
+        <ToastContainer />
+        <GlobalModal />
         <Routes>
           <Route path="/login" element={<LoginView />} />
           <Route
@@ -24,6 +29,14 @@ function App() {
             element={
               <PrivateRouter>
                 <DashboardView />
+              </PrivateRouter>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <PrivateRouter>
+                <SettingsView />
               </PrivateRouter>
             }
           />

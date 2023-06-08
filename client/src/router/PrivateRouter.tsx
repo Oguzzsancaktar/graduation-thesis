@@ -8,13 +8,12 @@ const PrivateRouter = ({ children }: RouteProps) => {
   const navigate = useNavigate()
   const { loggedUser } = useAuthenticationStateContext()
 
-  console.log(loggedUser);
   useEffect(() => {
     if (!loggedUser) {
-      navigate('/login')
+      // return navigate('/login')
     }
 
-    navigate('/dashboard')
+    // navigate('/dashboard')
 
   }, [loggedUser])
 
