@@ -13,7 +13,7 @@ const AppRouter = () => {
       document.documentElement.classList.remove('dark')
     }
 
-    const user = localStorage.getItem('user')
+    const user = localStorage.getItem('hotel_user')
 
     if (user) {
       setUser(JSON.parse(user))

@@ -9,4 +9,4 @@ const roomSchema = new Schema({
   },
 })
 
-module.exports = User = mongoose.model('Room', roomSchema)
+module.exports = Room = mongoose.model('Room', roomSchema)

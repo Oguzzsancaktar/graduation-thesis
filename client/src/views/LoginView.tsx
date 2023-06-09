@@ -31,9 +31,9 @@ const LoginView = () => {
     }
 
     useEffect(() => {
-        console.log("loggedUserloggedUser", loggedUser);
+
         if (loggedUser) {
-            localStorage.setItem('user', JSON.stringify(loggedUser))
+            localStorage.setItem('hotel_user', JSON.stringify(loggedUser))
             navigate(appRoutes.dashboard)
         }
 

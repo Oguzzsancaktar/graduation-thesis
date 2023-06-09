@@ -11,10 +11,6 @@ const guestSchema = new Schema(
       type: String,
       require: true,
     },
-    birthdate: {
-      type: Date,
-      require: true,
-    },
     passwordNo: {
       type: String,
       require: true,
@@ -25,7 +21,11 @@ const guestSchema = new Schema(
     },
     email: {
       type: String,
-      require: false,
+      require: true,
+    },
+    status: {
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true }

@@ -3,6 +3,7 @@ export *from './calendar';
 export *from './card';
 export *from './chart';
 export *from './datatable';
+export *from './datepicker';
 export *from './modal';
 export *from './notification';
 export *from './searchbar';
