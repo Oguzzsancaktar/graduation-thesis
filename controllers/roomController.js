@@ -46,9 +46,25 @@ const getRoom = async (req, res) => {
   }
 }
 
+const getAvailableRooms = async (req, res) => {
+  const { startDate, endDate } = req.body
+
+  try {
+    const allRooms = await dataAccess.roomDataAccess.findRooms()
+    const reservations = await dataAccess.reservationDataAccess.findReservations({ startDate, endDate })
+
+    const reservedRooms = reservations.map((reservation) => reservation.room._id.toString())
+
+    const availableRooms = allRooms.filter((room) => !reservedRooms.includes(room._id.toString()))
+
+    res.status(StatusCodes.OK).json(availableRooms)
+  } catch (error) {}
+}
+
 module.exports = {
   createRoom,
   getRooms,
   getRoom,
   updateRoom,
+  getAvailableRooms,
 }

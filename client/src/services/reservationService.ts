@@ -1,4 +1,5 @@
 import axiosInstance from "@/config/axios.instance";
+import { EReservationStatus } from "@/constants";
 import { IReservation, IReservationDTO } from "@/models";
 
 
@@ -12,8 +13,21 @@ const getReservation = async (reservationId: IReservation["_id"]) => {
   return response.data;
 }
 
-const getReservations = async () => {
-  const response = await axiosInstance.get<IReservation[]>('/reservations');
+type IQuery = {
+  status?:EReservationStatus
+  checkIn?: boolean;
+  startDate?: Date;
+  endDate?: Date;
+}
+const getReservations = async (query?:IQuery) => {
+  const response = await axiosInstance.get<IReservation[]>('/reservations',{
+    params: {
+      startDate: query?.startDate,
+      endDate: query?.endDate,
+      status: query?.status,
+      checkIn: query?.checkIn
+    }
+  });
   return response.data;
 }
 

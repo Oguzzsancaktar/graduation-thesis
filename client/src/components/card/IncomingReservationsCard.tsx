@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 // Constants
-import { appRoutes } from '@/constants'
+import { EReservationStatus, appRoutes, momentDateFormat } from '@/constants'
 // Components
 import { Avatar, ReservationDetailModal } from '..'
 // Models
@@ -11,13 +11,11 @@ import { getReservations } from '@/services'
 import { map } from 'lodash'
 import { getFullName } from '@/utils'
 import { useModalApiContext } from '@/context'
+import moment from 'moment'
 
 const IncomingReservationsCard = () => {
   const { openModal } = useModalApiContext()
-
   const [reservations, setReservations] = useState<IReservation[]>([] as IReservation[])
-
-
   const handleReservationClick = (reservation: IReservation) => {
     openModal({
       title: 'Reservation Detail ' + reservation.room.name,
@@ -28,15 +26,12 @@ const IncomingReservationsCard = () => {
 
   useEffect(() => {
     const fetchReservations = async () => {
-      const response = await getReservations()
+      const response = await getReservations({ status: EReservationStatus.ACTIVE, checkIn: false })
       setReservations(response)
     }
     fetchReservations()
   }, [])
 
-  if (!reservations.length) {
-    return <div>Loading...</div>
-  }
 
   return (
     <div className="w-full h-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
@@ -48,7 +43,9 @@ const IncomingReservationsCard = () => {
       </div>
       <div className="flow-root">
         <ul role="list" className="divide-y divide-gray-200 dark:divide-gray-700">
-          {map(reservations, (reservation, key) => (
+
+
+          {reservations.length > 0 ? map(reservations, (reservation, key) => (
             <li className="py-3 sm:py-4" key={key} onClick={() => handleReservationClick(reservation)}>
               <div className="flex items-center space-x-4">
                 <div className="flex-shrink-0">
@@ -56,10 +53,10 @@ const IncomingReservationsCard = () => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                    {getFullName(reservation.guest)}
-                  </p>
-                  <p className="text-sm text-gray-500 truncate dark:text-gray-400">
                     {reservation.room.name}
+                  </p>
+                  <p className="text-xs text-gray-500 truncate dark:text-gray-400">
+                    {moment(reservation.startDate).format(momentDateFormat)} - {moment(reservation.endDate).format(momentDateFormat)}
                   </p>
                 </div>
                 <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
@@ -67,7 +64,11 @@ const IncomingReservationsCard = () => {
                 </div>
               </div>
             </li>
-          ))}
+          )) : (
+            <div className="flex items-center justify-center">
+              <p className="text-gray-500 dark:text-gray-400">No incoming reservations.</p>
+            </div>
+          )}
 
         </ul>
       </div>

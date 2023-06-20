@@ -14,9 +14,9 @@ const createReservation = async (req, res) => {
 }
 
 const getReservations = async (req, res) => {
-  const { search, size, status } = req.query
+  const { checkIn, status } = req.query
   try {
-    const reservations = await dataAccess.reservationDataAccess.findReservations(req.query)
+    const reservations = await dataAccess.reservationDataAccess.findReservations({ status, checkIn })
     res.status(StatusCodes.OK).json(reservations)
   } catch (e) {
     console.log(e)
@@ -36,7 +36,8 @@ const updateReservation = async (req, res) => {
 }
 
 const getReservation = async (req, res) => {
-  const { reservationId } = req.query
+  const { reservationId } = req.params
+
   try {
     const reservation = await dataAccess.reservationDataAccess.findReservation(reservationId)
     res.status(StatusCodes.OK).json(reservation)

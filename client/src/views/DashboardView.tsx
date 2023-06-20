@@ -1,12 +1,17 @@
-import React from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 // Components.
 import { Avatar, GuestSearchbar, IncomingReservationsCard, InformationCard, ReservationModal, WeeklyRoomFullnessCard, WelcomeCard } from '@/components'
 import { useAuthenticationStateContext, useModalApiContext } from '@/context'
 import { getFullName } from '@/utils'
+import { IReservation } from '@/models'
+import { getReservations } from '@/services'
+import { ERoomStatus } from '@/constants'
 
 const DashboardView = () => {
   const { loggedUser } = useAuthenticationStateContext()
   const { openModal } = useModalApiContext()
+
+  const [currentMonthReservations, setCurrentMonthReservations] = useState<IReservation[]>([] as IReservation[])
 
   const openReservationModal = () => {
     openModal({
@@ -14,6 +19,37 @@ const DashboardView = () => {
       content: <ReservationModal />,
     })
   }
+
+  const totalMonthlyIncome = useMemo(() => {
+    return currentMonthReservations.reduce((acc, curr) => acc + curr.price, 0)
+  }, [currentMonthReservations])
+
+  const mostReservedRoom = useMemo(() => {
+    const rooms = currentMonthReservations.map(reservation => reservation.room)
+    const mostReservedRoom = rooms.sort((a, b) =>
+      rooms.filter(id => id === a).length - rooms.filter(id => id === b).length
+    ).pop()
+
+    return mostReservedRoom
+  }, [currentMonthReservations])
+
+  const totalInactivatedRoom = useMemo(() => {
+    return currentMonthReservations.reduce((acc, curr) => acc + (curr.room.status === ERoomStatus.INACTIVE ? 1 : 0), 0)
+  }, [currentMonthReservations])
+
+
+
+  useEffect(() => {
+    const fetchReservations = async () => {
+      const firstDayOfCurrentMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+      const lastDayOfCurrentMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)
+      const response = await getReservations({ startDate: firstDayOfCurrentMonth, endDate: lastDayOfCurrentMonth, checkIn: true })
+      setCurrentMonthReservations(response)
+    }
+
+    fetchReservations()
+  }, [])
+
   return (
     <div className="flex flex-row h-full">
       <div className="flex flex-col mr-5 h-full w-[calc(100%-400px)]">
@@ -27,13 +63,13 @@ const DashboardView = () => {
           </div>
           <div className="flex flex-row gap-5 my-5">
             <div>
-              <InformationCard />
+              <InformationCard title='Total Monthly Income' description={"You earned " + totalMonthlyIncome + "TL"} />
             </div>
             <div>
-              <InformationCard />
+              <InformationCard title='Best Room' description={'Your most rented room is' + mostReservedRoom?.name} />
             </div>
             <div>
-              <InformationCard />
+              <InformationCard title='Summarize' description={'Cancelled reservation count: ' + totalInactivatedRoom + ", Total reservation count: " + currentMonthReservations?.length} />
             </div>
           </div>
           <div className='h-full w-full'>

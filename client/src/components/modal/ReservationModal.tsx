@@ -6,15 +6,16 @@ import { IGuest, IReservationDTO, IRoom } from '@/models'
 // Utils.
 import { getFullName, toastSuccess } from '@/utils'
 // Services.
-import { createReservation, getGuests, getRooms } from '@/services'
+import { createReservation, getAvailableRooms, getGuests } from '@/services'
 // Libs.
 
 import { map } from 'lodash'
-import { Rangepicker } from '..'
+import { GuestCreateOrUpdateModal, Rangepicker } from '..'
+import moment from 'moment'
 
 const ReservationModal = () => {
   // Hooks.
-  const { closeModal } = useModalApiContext()
+  const { closeModal, openModal } = useModalApiContext()
   // States.
   const [rooms, setRooms] = useState<IRoom[]>([])
   const [guests, setGuests] = useState<IGuest[]>([])
@@ -27,6 +28,28 @@ const ReservationModal = () => {
     price: 0,
     checkIn: false
   })
+
+  const openReservationModal = () => {
+    openModal({
+      title: 'New Reservation',
+      content: <ReservationModal />
+    })
+  }
+  const modalHeader = () => {
+    return (
+      <div>
+        <p onClick={() => openReservationModal()} className="text-sm text-gray-500 dark:text-gray-400">Please fill the form to create new guest.</p>
+        <h2 className="text-lg font-medium text-gray-900 dark:text-white">Create New Guest</h2>
+      </div>
+    )
+  }
+
+  const handleCreateNewGuest = () => {
+    openModal({
+      title: modalHeader(),
+      content: <GuestCreateOrUpdateModal onClose={openReservationModal} />
+    })
+  }
 
   const handleDateChange = (date: Date, type: 'start' | 'end') => {
     if (type === 'start') {
@@ -54,6 +77,7 @@ const ReservationModal = () => {
       await createReservation(reservationDTO)
       toastSuccess('Reservation saved successfully')
       closeModal()
+      window.location.reload()
     } catch (error) {
       console.log(error);
     }
@@ -61,14 +85,7 @@ const ReservationModal = () => {
   }
 
   useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        const roomsData = await getRooms()
-        setRooms(roomsData)
-      } catch (error) {
-        console.log(error);
-      }
-    }
+
 
     const fetchGuests = async () => {
       try {
@@ -80,8 +97,21 @@ const ReservationModal = () => {
     }
 
     fetchGuests()
-    fetchRooms()
+
   }, [])
+
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const roomsData = await getAvailableRooms({ startDate: moment(reservationDTO.startDate).add(1, "days").toDate(), endDate: moment(reservationDTO.endDate).add(1, "days").toDate() })
+        setRooms(roomsData)
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchRooms()
+  }, [reservationDTO.endDate, reservationDTO.startDate])
 
 
   return (
@@ -107,17 +137,7 @@ const ReservationModal = () => {
             </select>
           </div>
           <div className="relative z-0 w-full mb-6 group">
-            <label htmlFor="room" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Room</label>
-            <select value={reservationDTO.room} onChange={handleInputChange} name='room' className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-              <option selected value={""}>Select Room</option>
-
-              {map(rooms, (room, key) => {
-                return (
-                  <option key={key} value={room._id}>{room.name}</option>
-                )
-              })}
-            </select>
+            <button onClick={handleCreateNewGuest} type="button" className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm mt-7 px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Create New Guest</button>
           </div>
         </div>
 
@@ -132,6 +152,17 @@ const ReservationModal = () => {
             </div>
           </div>
           <div className="relative z-0 w-full mb-6 group">
+            <label htmlFor="room" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Room</label>
+            <select value={reservationDTO.room} onChange={handleInputChange} name='room' className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+              <option selected value={""}>Select Room</option>
+
+              {map(rooms, (room, key) => {
+                return (
+                  <option key={key} value={room._id}>{room.name}</option>
+                )
+              })}
+            </select>
           </div>
         </div>
       </div>

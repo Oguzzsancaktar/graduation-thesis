@@ -1,3 +1,4 @@
+import { EReservationStatus } from "@/constants";
 import { IGuest, IRoom } from "..";
 
  interface IReservation {
@@ -7,6 +8,7 @@ import { IGuest, IRoom } from "..";
   startDate: Date;
   endDate: Date;
   price: number;
+  status:EReservationStatus
   checkIn: boolean;
 }
 

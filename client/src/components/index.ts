@@ -1,4 +1,5 @@
 export *from './avatar';
+export *from './badge';
 export *from './calendar';
 export *from './card';
 export *from './chart';

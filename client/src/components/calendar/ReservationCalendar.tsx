@@ -5,6 +5,7 @@ import { getReservations } from '@/services'
 import { IReservation } from '@/models'
 import { useModalApiContext } from '@/context'
 import { ReservationDetailModal } from '..'
+import { EReservationStatus } from '@/constants'
 
 const localizer = momentLocalizer(moment)
 
@@ -33,7 +34,7 @@ const ReservationCalendar = () => {
 
   useEffect(() => {
     const fetchReservations = async () => {
-      const response = await getReservations()
+      const response = await getReservations({ status: EReservationStatus.ACTIVE, checkIn: false })
       setReservations(response)
     }
     fetchReservations()

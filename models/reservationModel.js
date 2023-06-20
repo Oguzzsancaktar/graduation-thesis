@@ -22,6 +22,10 @@ const reservationSchema = new Schema({
     type: Number,
     required: true,
   },
+  status: {
+    type: Number,
+    default: 0,
+  },
   checkIn: {
     type: Boolean,
     required: false,

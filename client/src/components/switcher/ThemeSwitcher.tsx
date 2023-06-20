@@ -15,7 +15,7 @@ const ThemeSwitcher = () => {
         }
         }
       >
-        {colorTheme === 'light' ? <MdOutlineDarkMode /> : <MdLightMode />}
+        {colorTheme === 'light' ? <MdOutlineDarkMode color={"white"} /> : <MdLightMode  />}
       </button>
 
     </div>

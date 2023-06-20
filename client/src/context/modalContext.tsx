@@ -3,7 +3,6 @@ import { createContext, useContext, useMemo, useReducer } from 'react'
 export interface IModal {
   title: string | React.ReactNode
   content: string | React.ReactNode
-
 }
 
 

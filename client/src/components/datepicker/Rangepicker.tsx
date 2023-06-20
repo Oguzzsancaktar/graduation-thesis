@@ -47,6 +47,7 @@ const Rangepicker: React.FC<IProps> = ({ onChange }) => {
   const [startDate, setStartDate] = useState<Date>(new Date())
   const [endDate, setEndDate] = useState<Date>(moment(new Date()).add(1, "days").toDate())
 
+
   const handleChange = (selectedDate: Date, type: "start" | "end") => {
     if (type === "start") {
       setStartDate(selectedDate)

@@ -13,9 +13,10 @@ import { toastSuccess } from '@/utils'
 
 interface IProps {
   guest?: IGuest
+  onClose?: () => void
 }
 
-const GuestCreateOrUpdateModal: React.FC<IProps> = ({ guest }) => {
+const GuestCreateOrUpdateModal: React.FC<IProps> = ({ guest, onClose }) => {
   const { closeModal } = useModalApiContext()
   const [guestDTO, setGuestDTO] = useState<IGuest>({
     _id: undefined,
@@ -48,6 +49,7 @@ const GuestCreateOrUpdateModal: React.FC<IProps> = ({ guest }) => {
       }
       toastSuccess('Guest saved successfully')
       closeModal()
+      if (onClose) onClose()
     } catch (error) {
       console.log(error);
     }

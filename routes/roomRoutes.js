@@ -6,6 +6,8 @@ router.get('/:roomId', controllers.roomController.getRoom)
 
 router.get('/', controllers.roomController.getRooms)
 
+router.post('/available', controllers.roomController.getAvailableRooms)
+
 router.post('/', controllers.roomController.createRoom)
 
 router.put('/:roomId', controllers.roomController.updateRoom)
